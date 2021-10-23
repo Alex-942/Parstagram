@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnCaptureImage;
     private ImageView ivPostImage;
     private Button btnSubmit;
+    private Button btnSignOut;
     private File photoFile;
     public String photoFileName = "photo.jpg";
 
@@ -50,11 +51,21 @@ public class MainActivity extends AppCompatActivity {
         btnCaptureImage = findViewById(R.id.btnCaptureImage);
         ivPostImage = findViewById(R.id.ivPostImage);
         btnSubmit = findViewById(R.id.btnSubmit);
+        btnSignOut = findViewById(R.id.btnSignOut);
 
         btnCaptureImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 launchCamera();
+            }
+        });
+
+        btnSignOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParseUser.logOut();
+                goLoginActivity();
+                Toast.makeText(MainActivity.this, "Signed out successful", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -75,6 +86,12 @@ public class MainActivity extends AppCompatActivity {
                 savePost(description, currentUser, photoFile);
             }
         });
+    }
+
+    private void goLoginActivity() {
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
+            finish();
     }
 
     private void launchCamera() {
@@ -140,7 +157,9 @@ public class MainActivity extends AppCompatActivity {
             public void done(ParseException e) {
                 if(e != null){
                     Log.e(TAG, "Error while saving", e);
+                    Toast.makeText(MainActivity.this, "Post did not save :(", Toast.LENGTH_LONG).show();
                 }
+                Toast.makeText(MainActivity.this, "Post Saved Succeed", Toast.LENGTH_LONG).show();
                 Log.i(TAG, "Post save was successful");
                 etDescription.setText("");
                 ivPostImage.setImageResource(0);

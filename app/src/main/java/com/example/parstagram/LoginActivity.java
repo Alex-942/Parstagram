@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.parse.SignUpCallback;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -23,6 +24,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etUsername;
     private EditText etPassword;
     private Button btnLogin;
+    private Button btnSignUp;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
         etUsername = findViewById(R.id.username);
         etPassword = findViewById(R.id.password);
         btnLogin = findViewById(R.id.btnLogin);
+        btnSignUp = findViewById(R.id.btnSignUp);
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,6 +47,34 @@ public class LoginActivity extends AppCompatActivity {
                 String username = etUsername.getText().toString();
                 String password = etPassword.getText().toString();
                 loginUser(username, password);
+            }
+        });
+
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "onClick sign up button");
+                String username = etUsername.getText().toString();
+                String password = etPassword.getText().toString();
+
+                // Create the ParseUser
+                ParseUser user = new ParseUser();
+                // Set core properties
+                user.setUsername(username);
+                user.setPassword(password);
+
+                // Invoke signUpInBackground
+                user.signUpInBackground(new SignUpCallback() {
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            Log.i(TAG, "Sign up succeeded");
+                            Toast.makeText(LoginActivity.this, "Sign Up Succeed, use your new credentials now", Toast.LENGTH_LONG).show();
+                        } else {
+                            Log.e(TAG, "Sign up failed", e);
+                            Toast.makeText(LoginActivity.this, "Sign Up Failed", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
             }
         });
     }
@@ -55,14 +86,13 @@ public class LoginActivity extends AppCompatActivity {
             public void done(ParseUser user, ParseException e) {
                 if(e != null){
                     Log.e(TAG, "Issue with login", e);
+                    Toast.makeText(LoginActivity.this, "Login in Failed, try again", Toast.LENGTH_LONG).show();
                     return;
                 }
 
                 // navigate to main activity if correct credentials
+                Toast.makeText(LoginActivity.this,"Login Success!", Toast.LENGTH_LONG).show();
                 goMainActivity();
-                Toast.makeText(LoginActivity.this,"Success!", Toast.LENGTH_LONG).show();
-
-
             }
         });
     }
